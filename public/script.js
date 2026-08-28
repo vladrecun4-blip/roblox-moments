@@ -1,11 +1,24 @@
 document.addEventListener('DOMContentLoaded', loadVideos);
 
-function openModal() {
-  document.getElementById('uploadModal').style.display = 'flex';
+function openModal() { document.getElementById('uploadModal').style.display = 'flex'; }
+function closeModal() { document.getElementById('uploadModal').style.display = 'none'; }
+
+function openPlayer(videoUrl, title) {
+  const modal = document.getElementById('playerModal');
+  const player = document.getElementById('mainVideoPlayer');
+  document.getElementById('playerTitle').innerText = title;
+
+  player.src = videoUrl;
+  modal.style.display = 'flex';
+  player.play();
 }
 
-function closeModal() {
-  document.getElementById('uploadModal').style.display = 'none';
+function closePlayer() {
+  const modal = document.getElementById('playerModal');
+  const player = document.getElementById('mainVideoPlayer');
+  player.pause();
+  player.src = '';
+  modal.style.display = 'none';
 }
 
 async function loadVideos() {
@@ -23,10 +36,12 @@ async function loadVideos() {
     videos.forEach(v => {
       const card = document.createElement('div');
       card.className = 'card';
+      card.onclick = () => openPlayer(v.videoUrl, v.title);
       card.innerHTML = `
-        <a href="${v.videoUrl}" target="_blank">
+        <div class="thumbnail-box">
           <img src="${v.thumbUrl}" alt="${v.title}">
-        </a>
+          <div class="play-icon">▶</div>
+        </div>
         <div class="info">
           <h3>${v.title}</h3>
           <p>🎮 ${v.category} • ${v.createdAt}</p>
@@ -35,7 +50,7 @@ async function loadVideos() {
       grid.appendChild(card);
     });
   } catch (err) {
-    console.error('Ошибка загрузки:', err);
+    console.error('Ошибка:', err);
   }
 }
 
@@ -66,7 +81,7 @@ document.getElementById('uploadForm').addEventListener('submit', async function(
       alert('Ошибка при загрузке!');
     }
   } catch (err) {
-    alert('Сервер недоступен');
+    alert('Ошибка сервера');
   } finally {
     btn.innerText = 'Опубликовать';
     btn.disabled = false;
