@@ -4,72 +4,117 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>РоМоменты — Roblox Видео</title>
-  
-  <!-- Стильный плеер Plyr -->
   <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
   <link rel="stylesheet" href="./style.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-  <!-- Шапка -->
   <header class="navbar">
-    <div class="logo">Ро<span>Моменты</span></div>
-    <button class="btn-primary" onclick="openModal()">+ Загрузить роМомент</button>
+    <div class="logo" onclick="showSection('home')" style="cursor:pointer;">Ро<span>Моменты</span></div>
+    
+    <div class="nav-right">
+      <button class="btn-primary" onclick="openUploadModal()">+ Загрузить роМомент</button>
+      
+      <!-- Кнопки гостей -->
+      <div id="authButtons">
+        <button class="btn-sec" onclick="openAuthModal('login')">Войти</button>
+        <button class="btn-sec active" onclick="openAuthModal('register')">Регистрация</button>
+      </div>
+
+      <!-- Профиль вошедшего пользователя -->
+      <div id="userProfileNav" style="display: none; align-items: center; gap: 10px;">
+        <span id="navUsername" onclick="showSection('profile')" style="cursor: pointer; font-weight: bold; color: #00e676;">👤 Профиль</span>
+        <button class="btn-sec" onclick="logout()">Выйти</button>
+      </div>
+    </div>
   </header>
 
-  <!-- Сетка видео -->
   <div class="container">
-    <h2>🔥 Популярные роМоменты</h2>
-    <main class="video-grid" id="videoGrid">
-      <div class="empty-state">Загрузка...</div>
-    </main>
+    <!-- СЕКЦИЯ: ГЛАВНАЯ СТРАНИЦА -->
+    <section id="homeSection">
+      <h2>🔥 Популярные роМоменты</h2>
+      <main class="video-grid" id="videoGrid"></main>
+    </section>
+
+    <!-- СЕКЦИЯ: ЛИЧНЫЙ КАБИНЕТ (ПРОФИЛЬ) -->
+    <section id="profileSection" style="display: none;">
+      <div style="background: #252836; padding: 20px; border-radius: 12px; margin-bottom: 25px;">
+        <h2>👤 Мой профиль</h2>
+        <p>Email: <b id="profileEmail">-</b></p>
+        <p>Никнейм: <b id="profileUsername">-</b></p>
+      </div>
+      <h3>Мои загруженные роМоменты</h3>
+      <main class="video-grid" id="myVideoGrid"></main>
+    </section>
   </div>
 
-  <!-- Окно Загрузки -->
-  <div class="modal-backdrop" id="uploadModal">
+  <!-- Модалка Авторизации / Регистрации -->
+  <div class="modal-backdrop" id="authModal" style="display:none;">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>Загрузить роМомент</h3>
-        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h3 id="authTitle">Вход</h3>
+        <span class="close-btn" onclick="closeAuthModal()">&times;</span>
       </div>
-      <form id="uploadForm">
-        <div class="input-group">
-          <label>Название роМомента</label>
-          <input type="text" id="videoTitle" placeholder="Например: Забив в Blox Fruits!" required>
+      <form id="authForm">
+        <div class="input-group" id="usernameGroup" style="display:none;">
+          <label>Никнейм</label>
+          <input type="text" id="authUsername" placeholder="RobloxPlayer123">
         </div>
-
         <div class="input-group">
-          <label>Режим / Категория</label>
-          <select id="videoCategory">
-            <option value="Blox Fruits">Blox Fruits</option>
-            <option value="Pet Simulator">Pet Simulator</option>
-            <option value="BedWars">BedWars</option>
-            <option value="Brookhaven">Brookhaven</option>
-            <option value="Другое">Другое</option>
-          </select>
+          <label>Email</label>
+          <input type="email" id="authEmail" required placeholder="name@mail.com">
         </div>
-
         <div class="input-group">
-          <label>Видео (.mp4)</label>
-          <input type="file" id="videoFile" accept="video/mp4,video/webm" required>
+          <label>Пароль</label>
+          <input type="password" id="authPassword" required placeholder="••••••••">
         </div>
-
-        <div class="input-group">
-          <label>Обложка (Превью)</label>
-          <input type="file" id="thumbFile" accept="image/*" required>
-        </div>
-
-        <button type="submit" class="btn-submit">Опубликовать</button>
+        <button type="submit" class="btn-submit" id="authBtnSubmit">Войти</button>
       </form>
     </div>
   </div>
 
-  <!-- Модалка Кастомного Плеера -->
-  <div class="modal-backdrop" id="playerModal">
+  <!-- Модалка Загрузки -->
+  <div class="modal-backdrop" id="uploadModal" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Загрузить роМомент</h3>
+        <span class="close-btn" onclick="closeUploadModal()">&times;</span>
+      </div>
+      <form id="uploadForm">
+        <div class="input-group">
+          <label>Название роМомента</label>
+          <input type="text" id="videoTitle" placeholder="Супер забив!" required>
+        </div>
+        <div class="input-group">
+          <label>Категория</label>
+          <select id="videoCategory">
+            <option value="Blox Fruits">Blox Fruits</option>
+            <option value="Pet Simulator">Pet Simulator</option>
+            <option value="BedWars">BedWars</option>
+            <option value="Другое">Другое</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Видео (.mp4)</label>
+          <input type="file" id="videoFile" accept="video/mp4" required>
+        </div>
+        <div class="input-group">
+          <label>Обложка (Превью)</label>
+          <input type="file" id="thumbFile" accept="image/*" required>
+        </div>
+        <button type="submit" class="btn-submit">Опубликовать в облако</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Модалка Плеера -->
+  <div class="modal-backdrop" id="playerModal" style="display:none;">
     <div class="modal-card player-card">
       <div class="modal-header">
-        <h3 id="playerTitle">Просмотр роМомента</h3>
+        <h3 id="playerTitle">Просмотр</h3>
         <span class="close-btn" onclick="closePlayer()">&times;</span>
       </div>
       <div class="video-wrapper">
@@ -78,7 +123,6 @@
     </div>
   </div>
 
-  <!-- Подключаем скрипт Plyr -->
   <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
   <script src="./script.js"></script>
 </body>
