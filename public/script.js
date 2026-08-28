@@ -1,23 +1,34 @@
-document.addEventListener('DOMContentLoaded', loadVideos);
+let player = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Инициализируем кастомный плеер Plyr
+  player = new Plyr('#plyrPlayer', {
+    controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen']
+  });
+
+  loadVideos();
+});
 
 function openModal() { document.getElementById('uploadModal').style.display = 'flex'; }
 function closeModal() { document.getElementById('uploadModal').style.display = 'none'; }
 
 function openPlayer(videoUrl, title) {
   const modal = document.getElementById('playerModal');
-  const player = document.getElementById('mainVideoPlayer');
   document.getElementById('playerTitle').innerText = title;
 
-  player.src = videoUrl;
+  // Загружаем новое видео в Plyr плеер
+  player.source = {
+    type: 'video',
+    sources: [{ src: videoUrl, type: 'video/mp4' }]
+  };
+
   modal.style.display = 'flex';
   player.play();
 }
 
 function closePlayer() {
   const modal = document.getElementById('playerModal');
-  const player = document.getElementById('mainVideoPlayer');
-  player.pause();
-  player.src = '';
+  player.stop();
   modal.style.display = 'none';
 }
 
@@ -27,8 +38,8 @@ async function loadVideos() {
     const videos = await res.json();
     const grid = document.getElementById('videoGrid');
 
-    if (videos.length === 0) {
-      grid.innerHTML = '<div class="empty-state">Пока нет загруженных видео. Будь первым!</div>';
+    if (!videos || videos.length === 0) {
+      grid.innerHTML = '<div class="empty-state">Пока нет загруженных роМоментов. Загрузи первый!</div>';
       return;
     }
 
@@ -50,7 +61,7 @@ async function loadVideos() {
       grid.appendChild(card);
     });
   } catch (err) {
-    console.error('Ошибка:', err);
+    console.error('Ошибка загрузки:', err);
   }
 }
 
@@ -68,11 +79,7 @@ document.getElementById('uploadForm').addEventListener('submit', async function(
   btn.disabled = true;
 
   try {
-    const res = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData
-    });
-
+    const res = await fetch('/api/upload', { method: 'POST', body: formData });
     if (res.ok) {
       closeModal();
       this.reset();
