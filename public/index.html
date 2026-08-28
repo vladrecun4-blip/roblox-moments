@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>РоМоменты — Roblox Видео</title>
-  <!-- Важно: правильный путь к CSS -->
   <link rel="stylesheet" href="./style.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -20,11 +19,11 @@
   <div class="container">
     <h2>🔥 Популярные роМоменты</h2>
     <main class="video-grid" id="videoGrid">
-      <div class="empty-state">Пока нет загруженных видео. Будь первым!</div>
+      <div class="empty-state">Загрузка роМоментов...</div>
     </main>
   </div>
 
-  <!-- Модалка загрузки -->
+  <!-- Модалка Загрузки -->
   <div class="modal-backdrop" id="uploadModal">
     <div class="modal-card">
       <div class="modal-header">
@@ -34,7 +33,7 @@
       <form id="uploadForm">
         <div class="input-group">
           <label>Название роМомента</label>
-          <input type="text" id="videoTitle" placeholder="Например: Лютый забив в Blox Fruits!" required>
+          <input type="text" id="videoTitle" placeholder="Например: Забив в Blox Fruits!" required>
         </div>
 
         <div class="input-group">
@@ -60,6 +59,22 @@
 
         <button type="submit" class="btn-submit">Опубликовать</button>
       </form>
+    </div>
+  </div>
+
+  <!-- Модалка Плеера (Просмотр Видео) -->
+  <div class="modal-backdrop" id="playerModal">
+    <div class="modal-card player-card">
+      <div class="modal-header">
+        <h3 id="playerTitle">Название видео</h3>
+        <span class="close-btn" onclick="closePlayer()">&times;</span>
+      </div>
+      <div class="video-wrapper">
+        <video id="mainVideoPlayer" controls autoplay>
+          <source src="" type="video/mp4">
+          Ваш браузер не поддерживает видео.
+        </video>
+      </div>
     </div>
   </div>
 
