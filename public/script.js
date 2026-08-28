@@ -1,15 +1,25 @@
 document.addEventListener('DOMContentLoaded', loadVideos);
 
-function openModal() { document.getElementById('uploadModal').style.display = 'flex'; }
-function closeModal() { document.getElementById('uploadModal').style.display = 'none'; }
+function openModal() {
+  document.getElementById('uploadModal').style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('uploadModal').style.display = 'none';
+}
 
 async function loadVideos() {
   try {
     const res = await fetch('/api/videos');
     const videos = await res.json();
     const grid = document.getElementById('videoGrid');
-    grid.innerHTML = '';
 
+    if (videos.length === 0) {
+      grid.innerHTML = '<div class="empty-state">Пока нет загруженных видео. Будь первым!</div>';
+      return;
+    }
+
+    grid.innerHTML = '';
     videos.forEach(v => {
       const card = document.createElement('div');
       card.className = 'card';
@@ -19,7 +29,7 @@ async function loadVideos() {
         </a>
         <div class="info">
           <h3>${v.title}</h3>
-          <p>${v.category} • ${v.createdAt}</p>
+          <p>🎮 ${v.category} • ${v.createdAt}</p>
         </div>
       `;
       grid.appendChild(card);
@@ -38,17 +48,27 @@ document.getElementById('uploadForm').addEventListener('submit', async function(
   formData.append('video', document.getElementById('videoFile').files[0]);
   formData.append('thumbnail', document.getElementById('thumbFile').files[0]);
 
-  const res = await fetch('/api/upload', {
-    method: 'POST',
-    body: formData
-  });
+  const btn = e.target.querySelector('button');
+  btn.innerText = 'Загрузка...';
+  btn.disabled = true;
 
-  if (res.ok) {
-    alert('Успешно загружено!');
-    closeModal();
-    this.reset();
-    loadVideos();
-  } else {
-    alert('Ошибка при загрузке!');
+  try {
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (res.ok) {
+      closeModal();
+      this.reset();
+      loadVideos();
+    } else {
+      alert('Ошибка при загрузке!');
+    }
+  } catch (err) {
+    alert('Сервер недоступен');
+  } finally {
+    btn.innerText = 'Опубликовать';
+    btn.disabled = false;
   }
 });
