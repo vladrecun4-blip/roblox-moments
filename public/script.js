@@ -1,34 +1,55 @@
 let player = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Инициализируем кастомный плеер Plyr
-  player = new Plyr('#plyrPlayer', {
-    controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen']
-  });
-
+  // Подключаем стильный плеер Plyr
+  if (typeof Plyr !== 'undefined') {
+    player = new Plyr('#plyrPlayer', {
+      controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen']
+    });
+  }
   loadVideos();
 });
 
-function openModal() { document.getElementById('uploadModal').style.display = 'flex'; }
-function closeModal() { document.getElementById('uploadModal').style.display = 'none'; }
+function openModal() { 
+  document.getElementById('uploadModal').style.display = 'flex'; 
+}
 
+function closeModal() { 
+  document.getElementById('uploadModal').style.display = 'none'; 
+}
+
+// Всплывающее окно вместо перехода по ссылке
 function openPlayer(videoUrl, title) {
   const modal = document.getElementById('playerModal');
+  const videoElem = document.getElementById('plyrPlayer');
+
   document.getElementById('playerTitle').innerText = title;
 
-  // Загружаем новое видео в Plyr плеер
-  player.source = {
-    type: 'video',
-    sources: [{ src: videoUrl, type: 'video/mp4' }]
-  };
+  if (player) {
+    player.source = {
+      type: 'video',
+      sources: [{ src: videoUrl, type: 'video/mp4' }]
+    };
+    player.play();
+  } else {
+    videoElem.src = videoUrl;
+    videoElem.play();
+  }
 
   modal.style.display = 'flex';
-  player.play();
 }
 
 function closePlayer() {
   const modal = document.getElementById('playerModal');
-  player.stop();
+  const videoElem = document.getElementById('plyrPlayer');
+
+  if (player) {
+    player.stop();
+  } else {
+    videoElem.pause();
+    videoElem.src = '';
+  }
+
   modal.style.display = 'none';
 }
 
@@ -47,6 +68,7 @@ async function loadVideos() {
     videos.forEach(v => {
       const card = document.createElement('div');
       card.className = 'card';
+      // Передаем ссылку и название в модалку (БЕЗ перенаправления!)
       card.onclick = () => openPlayer(v.videoUrl, v.title);
       card.innerHTML = `
         <div class="thumbnail-box">
