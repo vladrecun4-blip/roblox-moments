@@ -4,36 +4,65 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>РоМоменты — Roblox Видео</title>
-  <link rel="stylesheet" href="style.css">
+  <!-- Важно: правильный путь к CSS -->
+  <link rel="stylesheet" href="./style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+
+  <!-- Шапка -->
   <header class="navbar">
     <div class="logo">Ро<span>Моменты</span></div>
     <button class="btn-primary" onclick="openModal()">+ Загрузить роМомент</button>
   </header>
 
-  <main class="video-grid" id="videoGrid"></main>
+  <!-- Контент -->
+  <div class="container">
+    <h2>🔥 Популярные роМоменты</h2>
+    <main class="video-grid" id="videoGrid">
+      <div class="empty-state">Пока нет загруженных видео. Будь первым!</div>
+    </main>
+  </div>
 
-  <div class="modal" id="uploadModal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal()">&times;</span>
-      <h2>Загрузить роМомент</h2>
+  <!-- Модалка загрузки -->
+  <div class="modal-backdrop" id="uploadModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Загрузить роМомент</h3>
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+      </div>
       <form id="uploadForm">
-        <input type="text" id="videoTitle" placeholder="Название видео" required>
-        <select id="videoCategory">
-          <option value="Blox Fruits">Blox Fruits</option>
-          <option value="Pet Simulator">Pet Simulator</option>
-          <option value="Другое">Другое</option>
-        </select>
-        <label>Файл видео (.mp4):</label>
-        <input type="file" id="videoFile" accept="video/mp4" required>
-        <label>Обложка (Картинка):</label>
-        <input type="file" id="thumbFile" accept="image/*" required>
+        <div class="input-group">
+          <label>Название роМомента</label>
+          <input type="text" id="videoTitle" placeholder="Например: Лютый забив в Blox Fruits!" required>
+        </div>
+
+        <div class="input-group">
+          <label>Режим / Категория</label>
+          <select id="videoCategory">
+            <option value="Blox Fruits">Blox Fruits</option>
+            <option value="Pet Simulator">Pet Simulator</option>
+            <option value="BedWars">BedWars</option>
+            <option value="Brookhaven">Brookhaven</option>
+            <option value="Другое">Другое</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Видео (.mp4)</label>
+          <input type="file" id="videoFile" accept="video/mp4" required>
+        </div>
+
+        <div class="input-group">
+          <label>Обложка (Превью)</label>
+          <input type="file" id="thumbFile" accept="image/*" required>
+        </div>
+
         <button type="submit" class="btn-submit">Опубликовать</button>
       </form>
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script src="./script.js"></script>
 </body>
 </html>
