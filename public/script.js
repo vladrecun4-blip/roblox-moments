@@ -1,3 +1,5 @@
+const SUPABASE_URL = 'sb_publishable_ZRkQOtE_IaPpNoHxTbUPWA_wJejdpxL';
+const SUPABASE_KEY = 'sb_secret_n5qGh7lJltUnnqCw-kFzAg_EDpyeTJ4';
 let player = null;
 
 document.addEventListener('DOMContentLoaded', () => {
